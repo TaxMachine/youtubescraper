@@ -16,6 +16,7 @@ type
         soUploadDate = 0, soRelevance, soViewCount, soRating
 
     Video* = object
+        videoId*: string
         title*: string
         url*: string
         description*: string

@@ -30,6 +30,7 @@ proc getVideos*(url: string): seq[Video] =
         Video(
           title: vid["title"]["runs"][0]["text"].getStr(),
           url: VIDEO_URL & vid["videoId"].getStr(),
+          videoId: vid["videoId"].getStr(),
           duration: vid["lengthText"]["simpleText"].getStr(),
           views: getViews(vid["viewCountText"]["simpleText"].getStr()),
           channel: vid["ownerText"]["runs"][0]["text"].getStr(),
