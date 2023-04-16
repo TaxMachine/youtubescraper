@@ -7,7 +7,7 @@
 
 import unittest
 
-import youtube_scraper
+import youtubescraper
 
 suite "youtube_scraper":
   test "getVideos":
