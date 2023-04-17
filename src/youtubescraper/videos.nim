@@ -1,5 +1,5 @@
 import
-  std/[strutils, httpclient, sequtils, json, uri],
+  std/[strutils, httpclient, json, uri],
   constants
 
 proc fetchVids(url: string): JsonNode =
@@ -15,7 +15,7 @@ proc fetchVids(url: string): JsonNode =
   return json.parseJson()
 
 proc getViews(view: string): int =
-  return if view != "No views": view.replace(" views", "").parseInt else: 0
+  return if view != "No views": view.replace(" views", "").replace(" view", "").parseInt else: 0
 
 proc getSubscribers(subs: string): int =
   return if subs != "No subscribers": subs.replace(" subscribers", "").parseInt else: 0
@@ -67,16 +67,19 @@ proc getVideos*(url: string, options: SearchOptions): seq[Video] =
 proc getVideoInfo*(videoId: string): Video =
   let
     vid = fetchVids(VIDEO_URL & videoId)["engagementPanels"][1]["engagementPanelSectionListRenderer"]["content"]["structuredDescriptionContentRenderer"]["items"]
-  result = Video(
-    title: vid[0]["videoDescriptionHeaderRenderer"]["title"]["runs"][0]["text"].getStr(),
-    url: VIDEO_URL & videoId,
-    views: getViews(vid[0]["videoDescriptionHeaderRenderer"]["views"]["simpleText"].getStr()),
-    channel: vid[0]["videoDescriptionHeaderRenderer"]["channel"]["simpleText"].getStr(),
-    channelUrl: CHANNEL_URL & vid[0]["videoDescriptionHeaderRenderer"]["channelNavigationEndpoint"]["commandMetadata"]["webCommandMetadata"]["url"].getStr(),
-    uploadDate: vid[0]["videoDescriptionHeaderRenderer"]["publishDate"]["simpleText"].getStr(),
-    thumbnail: vid[0]["videoDescriptionHeaderRenderer"]["channelThumbnail"]["thumbnails"][0]["url"].getStr(),
-    description: vid[1]["expandableVideoDescriptionBodyRenderer"]["attributedDescriptionBodyText"]["content"].getStr()
-  )
+  try:
+    result = Video(
+      title: vid[0]["videoDescriptionHeaderRenderer"]["title"]["runs"][0]["text"].getStr(),
+      url: VIDEO_URL & videoId,
+      views: getViews(vid[0]["videoDescriptionHeaderRenderer"]["views"]["simpleText"].getStr()),
+      channel: vid[0]["videoDescriptionHeaderRenderer"]["channel"]["simpleText"].getStr(),
+      channelUrl: CHANNEL_URL & vid[0]["videoDescriptionHeaderRenderer"]["channelNavigationEndpoint"]["commandMetadata"]["webCommandMetadata"]["url"].getStr(),
+      uploadDate: vid[0]["videoDescriptionHeaderRenderer"]["publishDate"]["simpleText"].getStr(),
+      thumbnail: vid[0]["videoDescriptionHeaderRenderer"]["channelThumbnail"]["thumbnails"][0]["url"].getStr(),
+      description: vid[1]["expandableVideoDescriptionBodyRenderer"]["attributedDescriptionBodyText"]["content"].getStr()
+    )
+  except Exception:
+    discard
 
 proc getChannelVideos*(channelId: string): seq[Video] =
   let
@@ -99,10 +102,10 @@ proc getChannelVideos*(channelId: string): seq[Video] =
     except:
       discard
 
-proc getChannelInfo*(channelId: string): Channel =
+proc getChannelInfo*(channelId: string): constants.Channel =
   let
     channel = fetchVids(CHANNEL_URL & "/" & channelId)
-  result = Channel(
+  result = constants.Channel(
     name: channel["header"]["c4TabbedHeaderRenderer"]["title"].getStr(),
     channelId: channel["metadata"]["channelMetadataRenderer"]["externalId"].getStr(),
     subscribers: getSubscribers(channel["header"]["c4TabbedHeaderRenderer"]["subscriberCountText"]["simpleText"].getStr()),
