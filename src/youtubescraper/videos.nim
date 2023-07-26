@@ -1,5 +1,5 @@
 import
-  std/[strutils, httpclient, json, uri],
+  std/[strutils, httpclient, json, uri, re],
   constants
 
 proc fetchVids(url: string): JsonNode =
@@ -15,10 +15,10 @@ proc fetchVids(url: string): JsonNode =
   return json.parseJson()
 
 proc getViews(view: string): int =
-  return if view != "No views": view.replace(" views", "").replace(" view", "").parseInt else: 0
+  return if match(view, re"\d"): replace(view, re"\D", "").parseInt else: 0
 
 proc getSubscribers(subs: string): int =
-  return if subs != "No subscribers": subs.replace(" subscribers", "").parseInt else: 0
+  return if match(subs, re"\d"): replace(subs, re"\D", "").parseInt else: 0
 
 proc getVideos*(url: string): seq[Video] =
   let
