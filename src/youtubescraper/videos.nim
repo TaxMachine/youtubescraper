@@ -1,5 +1,5 @@
 import
-  std/[strutils, httpclient, json, uri],
+  std/[strutils, httpclient, json, uri, re],
   constants
 
 proc fetchVids(url: string): JsonNode =
