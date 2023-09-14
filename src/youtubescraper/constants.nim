@@ -26,6 +26,7 @@ type
         channel*: string
         thumbnail*: string
         channelUrl*: string
+        firstUrl*: string
 
     Channel* = object
         name*: string

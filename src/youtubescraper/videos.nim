@@ -76,7 +76,8 @@ proc getVideoInfo*(videoId: string): Video =
       channelUrl: CHANNEL_URL & vid[0]["videoDescriptionHeaderRenderer"]["channelNavigationEndpoint"]["commandMetadata"]["webCommandMetadata"]["url"].getStr(),
       uploadDate: vid[0]["videoDescriptionHeaderRenderer"]["publishDate"]["simpleText"].getStr(),
       thumbnail: vid[0]["videoDescriptionHeaderRenderer"]["channelThumbnail"]["thumbnails"][0]["url"].getStr(),
-      description: vid[1]["expandableVideoDescriptionBodyRenderer"]["attributedDescriptionBodyText"]["content"].getStr()
+      description: vid[1]["expandableVideoDescriptionBodyRenderer"]["attributedDescriptionBodyText"]["content"].getStr(),
+      firstUrl: vid[1]["expandableVideoDescriptionBodyRenderer"]["attributedDescriptionBodyText"]["commandRuns"][0]["onTap"]["innertubeCommand"]["urlEndpoint"]["url"].getStr()
     )
   except Exception:
     discard
